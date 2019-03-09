@@ -51,24 +51,24 @@ namespace ShinyPixel
                 Background = new SolidColorBrush(Colors.White)
             };
 
-            var gradientBrush = new LinearGradientBrush()
+            var standardGradient = new LinearGradientBrush()
             {
                 StartPoint = new Point(0, 0.5),
                 EndPoint = new Point(1, 0.5)
             };
 
-            gradientBrush.GradientStops.Add(new GradientStop(Colors.Red, 0.0));
-            gradientBrush.GradientStops.Add(new GradientStop(Colors.Green, 1.0));
+            standardGradient.GradientStops.Add(new GradientStop(Colors.Red, 0.0));
+            standardGradient.GradientStops.Add(new GradientStop(Colors.Green, 1.0));
 
 
-            var secondGradientBrush = new LinearGradientBrush()
+            var gamaBasedGradient = new LinearGradientBrush()
             {
                 StartPoint = new Point(0, 0.5),
                 EndPoint = new Point(1, 0.5)
             };
 
-            secondGradientBrush.GradientStops.Add(new GradientStop(Colors.Red, 0.0));
-            secondGradientBrush.GradientStops.Add(new GradientStop(Colors.Green, 1.0));
+            gamaBasedGradient.GradientStops.Add(new GradientStop(Colors.Red, 0.0));
+            gamaBasedGradient.GradientStops.Add(new GradientStop(Colors.Green, 1.0));
 
             var steps = 10;
             for (int i = 1; i <= steps; i++)
@@ -76,29 +76,63 @@ namespace ShinyPixel
                 var progress = i / (steps + 1.0);
                 var blend = 1.0 - progress;
 
-                secondGradientBrush.GradientStops.Add(
+                gamaBasedGradient.GradientStops.Add(
                     new GradientStop(
                         Blend(Colors.Red, Colors.Green, blend),
                         progress));
             }
 
-            var rectangle = new Rectangle()
+            var standardGradientRectangle = new Rectangle()
             {
                 Width = 800,
                 Height = 200,
-                Fill = gradientBrush
+                Fill = standardGradient
             };
 
-            var secondRectangle = new Rectangle()
+            var gamaBasedRectangle = new Rectangle()
             {
                 Width = 800,
                 Height = 200,
-                Fill = secondGradientBrush
+                Fill = gamaBasedGradient
             };
 
-            _canvas.Children.Add(rectangle);
-            _canvas.Children.Add(secondRectangle);
-            Canvas.SetTop(secondRectangle, 200);
+            _canvas.Children.Add(standardGradientRectangle);
+            _canvas.Children.Add(gamaBasedRectangle);
+            Canvas.SetTop(gamaBasedRectangle, 200);
+
+
+
+
+            var alphaBasedRectangle = new Rectangle()
+            {
+                Width = 800,
+                Height = 200,
+                Fill = new SolidColorBrush(Colors.Red)
+            };
+
+            _canvas.Children.Add(alphaBasedRectangle);
+            Canvas.SetTop(alphaBasedRectangle, 400);
+
+
+            for (int i = 1; i <= steps; i++)
+            {
+                var xmin = i * 80;
+                var alpha = 255 * ((i * 1.0) / steps);
+
+                var alphaColor = Colors.Green;
+                alphaColor.A = Convert.ToByte(alpha);
+
+                alphaBasedRectangle = new Rectangle()
+                {
+                    Width = 80,
+                    Height = 200,
+                    Fill = new SolidColorBrush(alphaColor)
+                };
+
+                _canvas.Children.Add(alphaBasedRectangle);
+                Canvas.SetTop(alphaBasedRectangle, 400);
+                Canvas.SetLeft(alphaBasedRectangle, xmin);
+            }
 
             _canvas.AddHandler(MouseDownEvent, new MouseButtonEventHandler(Canvas_MouseDown));
 
