@@ -1,4 +1,7 @@
-﻿using System.Reflection;
+﻿// Copyright (c) 2019 Moeru. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Windows;
 
@@ -10,7 +13,7 @@ using System.Windows;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("ShinyPixel")]
-[assembly: AssemblyCopyright("")]
+[assembly: AssemblyCopyright("Copyright (c) 2019 Moeru")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

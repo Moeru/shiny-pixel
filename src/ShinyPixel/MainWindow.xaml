@@ -1,4 +1,8 @@
-﻿<Window x:Class="ShinyPixel.MainWindow"
+﻿<!--
+    Copyright (c) 2019 Moeru. All rights reserved.
+    Licensed under the MIT License. See LICENSE in the project root for license information.
+    -->
+<Window x:Class="ShinyPixel.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -6,7 +10,16 @@
         xmlns:local="clr-namespace:ShinyPixel"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
-    <Grid>
+    <DockPanel>
+        <Menu DockPanel.Dock="Top">
+            <MenuItem Header="_File">
+                <MenuItem Header="_Open" Click="MenuOpen_Click" />
+                <MenuItem Header="_Save" Click="MenuSave_Click" />
+                <Separator />
+                <MenuItem Header="E_xit" Click="MenuExit_Click" />
+            </MenuItem>
+        </Menu>
+        <Grid Name="MainWindowGrid" />
+    </DockPanel>
 
-    </Grid>
 </Window>
