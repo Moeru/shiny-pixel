@@ -3,17 +3,16 @@
 
 using Microsoft.Win32;
 using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace ShinyPixel
 {
+
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
@@ -27,13 +26,11 @@ namespace ShinyPixel
         {
             InitializeComponent();
 
-
-
             var dockPanel = Content as DependencyObject;
 
             var grid = FindControl<Grid>(dockPanel, "MainWindowGrid");
 
-            _writeableBitmap = new WriteableBitmap(800, 450, 96, 96, PixelFormats.Bgr24, null);
+            _writeableBitmap = new WriteableBitmap(800, 450, 96, 96, PixelFormats.Rgb24, null);
 
             _imageDrawing = new ImageDrawing()
             {
@@ -41,15 +38,17 @@ namespace ShinyPixel
                 ImageSource = _writeableBitmap
             };
 
-            var drawingImageSource = new DrawingImage(_imageDrawing);
 
             _imageControl = new Image()
             {
                 Stretch = Stretch.None,
-                Source = drawingImageSource
+                Source = new DrawingImage(_imageDrawing)
             };
 
-            grid.Children.Add(_imageControl);
+            var scrollViewer = new ScrollViewer();
+            scrollViewer.Content = _imageControl;
+
+            grid.Children.Add(scrollViewer);
 
             _imageControl.AddHandler(MouseDownEvent, new MouseButtonEventHandler(Image_MouseDown));
         }
@@ -65,28 +64,30 @@ namespace ShinyPixel
             {
                 _writeableBitmap.Lock();
 
+                Console.WriteLine($"X: {position.X} Y: {position.Y}");
+                Console.WriteLine($"row: {row} col: {column}");
+                Console.WriteLine($"Bits: {_writeableBitmap.Format.BitsPerPixel}");
+
+                foreach (var mask in _writeableBitmap.Format.Masks)
+                {
+                    Console.WriteLine($"Masks: {string.Join(", ", mask.Mask.Select(b => b.ToString()))}");
+                }
+
                 unsafe
                 {
                     var backBufferPointer = _writeableBitmap.BackBuffer;
 
                     backBufferPointer += row * _writeableBitmap.BackBufferStride;
-                    backBufferPointer += column * 4;
+                    backBufferPointer += column * _writeableBitmap.Format.BitsPerPixel / 8;
 
-                    var color_data = 255 << 16; // Red
-                    color_data |= 150 << 8; // Green
-                    color_data |= 200 << 0; // Blue
+                    *((byte*)backBufferPointer) = 255; // Red
+                    *((byte*)backBufferPointer + 1) = 150; // Green
+                    *((byte*)backBufferPointer + 2) = 200; // Blue
 
-                    *((int*)backBufferPointer) = color_data;
-
-                    backBufferPointer -= 4;
-
-                    *((int*)(backBufferPointer)) = color_data;
-
-
-                    for (var i = 0; i < 12; i++)
+                    for (var i = 0; i < 3; i++)
                     {
                         var x = *((byte*)(backBufferPointer + i));
-                        Console.WriteLine($"X: {x}");
+                        Console.WriteLine($"Bit: {x}");
                     }
 
                 }
@@ -120,7 +121,7 @@ namespace ShinyPixel
             var bitmap = new BitmapImage(new Uri(fileName));
             _writeableBitmap = new WriteableBitmap(bitmap);
             _imageDrawing.ImageSource = _writeableBitmap;
-            _imageDrawing.Rect = new Rect(0, 0, _writeableBitmap.Width, _writeableBitmap.Height);
+            _imageDrawing.Rect = new Rect(0, 0, _writeableBitmap.PixelWidth, _writeableBitmap.PixelHeight);
         }
 
         private void MenuSave_Click(object sender, RoutedEventArgs e)
