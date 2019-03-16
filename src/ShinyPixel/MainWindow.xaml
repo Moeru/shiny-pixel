@@ -9,7 +9,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ShinyPixel"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" Height="700" Width="550">
     <DockPanel>
         <Menu DockPanel.Dock="Top">
             <MenuItem Header="_File">
@@ -17,7 +17,29 @@
                 <MenuItem Header="E_xit" Click="MenuExit_Click" />
             </MenuItem>
         </Menu>
-        <Grid Name="MainWindowGrid" />
+        <StackPanel Name="MainStackPanel">
+            <Grid Name="MainWindowGrid" Width="500" Height="500" />
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="20" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <Label Grid.Row="0" Grid.Column="0" >R</Label>
+                <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Red, Mode=TwoWay}" />
+                <Label Grid.Row="1" Grid.Column="0">G</Label>
+                <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Green, Mode=TwoWay}" />
+                <Label Grid.Row="2" Grid.Column="0">B</Label>
+                <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding Blue, Mode=TwoWay}" />
+            </Grid>
+        </StackPanel>
     </DockPanel>
 
 </Window>

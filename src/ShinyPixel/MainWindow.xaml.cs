@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -15,6 +16,11 @@ namespace ShinyPixel
     /// </summary>
     public partial class MainWindow : Window
     {
+        public ColorSelection _colorSelection;
+        private RectangleGeometry[,] _renderRectangles;
+        private GeometryGroup _geometryGroupA;
+        private GeometryGroup _geometryGroupB;
+
         private DrawingGroup _drawingGroup;
         private DrawingVisual _backgroundDrawingVisual;
         private Image _imageControl;
@@ -22,27 +28,64 @@ namespace ShinyPixel
         private SolidColorBrush _brush2;
         private RenderTargetBitmap _renderTargetBitmap;
 
+        public class ColorSelection : INotifyPropertyChanged
+        {
+            public event PropertyChangedEventHandler PropertyChanged;
+
+            protected void OnPropertyChanged(string propertyName)
+            {
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            }
+
+            private byte _red;
+            private byte _green;
+            private byte _blue;
+
+            public byte Red
+            {
+                get { return _red; }
+                set { _red = value; OnPropertyChanged(nameof(Red)); }
+            }
+            public byte Green
+            {
+                get { return _green; }
+                set { _green = value; OnPropertyChanged(nameof(Green)); }
+            }
+            public byte Blue
+            {
+                get { return _blue; }
+                set { _blue = value; OnPropertyChanged(nameof(Blue)); }
+            }
+        }
+
         public MainWindow()
         {
             InitializeComponent();
 
-            var geometryGroupA = new GeometryGroup();
-            var geometryGroupB = new GeometryGroup();
+            _colorSelection = new ColorSelection
+            {
+                Red = 0,
+                Green = 10,
+                Blue = 50
+            };
+
+            this.DataContext = _colorSelection;
+
+            _colorSelection.PropertyChanged += new PropertyChangedEventHandler(ColorSelection_PropertyChanged);
+
+            _renderRectangles = new RectangleGeometry[100, 100];
+
+            _geometryGroupA = new GeometryGroup();
+            _geometryGroupB = new GeometryGroup();
 
             for (var i = 0; i < 100; i++)
             {
                 for (var j = 0; j < 100; j++)
                 {
-                    var rect = new Rect(5 * i, 5 * j, 5, 5);
+                    _renderRectangles[i, j] = new RectangleGeometry(
+                        new Rect(5 * i, 5 * j, 5, 5));
 
-                    if ((i + j) % 2 == 0)
-                    {
-                        geometryGroupA.Children.Add(new RectangleGeometry(rect));
-                    }
-                    else
-                    {
-                        geometryGroupB.Children.Add(new RectangleGeometry(rect));
-                    }
+                    _geometryGroupA.Children.Add(_renderRectangles[i, j]);
                 }
             }
 
@@ -50,13 +93,13 @@ namespace ShinyPixel
 
             _brush = new SolidColorBrush(Colors.Black);
             var geometryDrawingA = new GeometryDrawing();
-            geometryDrawingA.Geometry = geometryGroupA;
+            geometryDrawingA.Geometry = _geometryGroupA;
             geometryDrawingA.Brush = _brush;
             _drawingGroup.Children.Add(geometryDrawingA);
 
             _brush2 = new SolidColorBrush(Colors.Red);
             var geometryDrawingB = new GeometryDrawing();
-            geometryDrawingB.Geometry = geometryGroupB;
+            geometryDrawingB.Geometry = _geometryGroupB;
             geometryDrawingB.Brush = _brush2;
             _drawingGroup.Children.Add(geometryDrawingB);
 
@@ -78,67 +121,53 @@ namespace ShinyPixel
             };
 
             var dockPanel = Content as DependencyObject;
-            var grid = FindControl<Grid>(dockPanel, "MainWindowGrid");
+            var stackPanel = FindControl<StackPanel>(dockPanel, "MainStackPanel");
+            var grid = FindControl<Grid>(stackPanel, "MainWindowGrid");
             grid.Children.Add(_imageControl);
 
             _imageControl.AddHandler(MouseDownEvent, new MouseButtonEventHandler(Image_MouseDown));
         }
 
-        private void Image_MouseDown(object sender, MouseButtonEventArgs e)
+        private void UpdateDrawing()
         {
-            var position = e.GetPosition(_imageControl);
-
-            var column = Convert.ToInt32(position.X);
-            var row = Convert.ToInt32(position.Y);
-
-            _brush.Color = Color.FromRgb(
-                (byte)((column * row) % 256),
-                (byte)((2 * column * row) % 256),
-                (byte)((3 * column * row) % 256));
-
             using (var drawingContext = _backgroundDrawingVisual.RenderOpen())
             {
                 drawingContext.DrawDrawing(_drawingGroup);
             }
 
             _renderTargetBitmap.Render(_backgroundDrawingVisual);
+        }
 
-            //try
-            //{
-            //    _writeableBitmap.Lock();
+        private void ColorSelection_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            switch(e.PropertyName)
+            {
+                case nameof(ColorSelection.Red):
+                case nameof(ColorSelection.Green):
+                case nameof(ColorSelection.Blue):
+                    _brush2.Color = Color.FromRgb(
+                        _colorSelection.Red,
+                        _colorSelection.Green,
+                        _colorSelection.Blue);
+                    break;
+                default:
+                    break;
+            }
 
-            //    unsafe
-            //    {
-            //        var backBufferPointer = _writeableBitmap.BackBuffer;
+            UpdateDrawing();
+        }
 
-            //        backBufferPointer += row * _writeableBitmap.BackBufferStride;
-            //        backBufferPointer += column * 4;
+        private void Image_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            var position = e.GetPosition(_imageControl);
 
-            //        var color_data = 255 << 16; // Red
-            //        color_data |= 150 << 8; // Green
-            //        color_data |= 200 << 0; // Blue
+            var column = Convert.ToInt32(position.X) / 5;
+            var row = Convert.ToInt32(position.Y) / 5;
 
-            //        *((int*)backBufferPointer) = color_data;
+            _geometryGroupA.Children.Remove(_renderRectangles[column, row]);
+            _geometryGroupB.Children.Add(_renderRectangles[column, row]);
 
-            //        backBufferPointer -= 4;
-
-            //        *((int*)(backBufferPointer)) = color_data;
-
-
-            //        for (var i = 0; i < 12; i++)
-            //        {
-            //            var x = *((byte*)(backBufferPointer + i));
-            //            Console.WriteLine($"X: {x}");
-            //        }
-
-            //    }
-
-            //    _writeableBitmap.AddDirtyRect(new Int32Rect(column - 1, row, 2, 2));
-            //}
-            //finally
-            //{
-            //    _writeableBitmap.Unlock();
-            //}
+            UpdateDrawing();
         }
 
         private void MenuNew_Click(object sender, RoutedEventArgs e)
