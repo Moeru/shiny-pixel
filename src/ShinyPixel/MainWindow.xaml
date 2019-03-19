@@ -10,7 +10,7 @@
         xmlns:local="clr-namespace:ShinyPixel"
         xmlns:controls="clr-namespace:ShinyPixel.Controls"
         mc:Ignorable="d"
-        Title="MainWindow" Height="700" Width="550">
+        Title="MainWindow" Height="750" Width="550">
     <DockPanel LastChildFill="False">
         <Menu DockPanel.Dock="Top">
             <MenuItem Header="_File">
@@ -29,26 +29,8 @@
             </ComboBox>
         </StackPanel>
         <StackPanel Name="MainStackPanel">
-            <controls:DrawingUiControl x:Name="DrawingUi"  />
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="20" />
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
-
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="*" />
-                </Grid.RowDefinitions>
-
-                <Label Grid.Row="0" Grid.Column="0" >R</Label>
-                <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Red, Mode=TwoWay}" />
-                <Label Grid.Row="1" Grid.Column="0">G</Label>
-                <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Green, Mode=TwoWay}" />
-                <Label Grid.Row="2" Grid.Column="0">B</Label>
-                <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding Blue, Mode=TwoWay}" />
-            </Grid>
+            <controls:DrawingUiControl x:Name="DrawingUi" />
+            <controls:PaletteColorControl />
         </StackPanel>
     </DockPanel>
 </Window>

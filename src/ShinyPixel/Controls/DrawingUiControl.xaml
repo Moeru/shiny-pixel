@@ -12,5 +12,5 @@
              d:DesignHeight="500" d:DesignWidth="500"
              Name="DrawingUi">
 
-    <Grid Name="DrawingGrid" />
+    <Grid />
 </UserControl>

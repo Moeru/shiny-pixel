@@ -122,35 +122,5 @@ namespace ShinyPixel.Controls
 
             //            UpdateDrawing();
         }
-
-        private static T FindControl<T>(DependencyObject root, string controlName)
-            where T : DependencyObject
-        {
-            if (root == null)
-            {
-                throw new ArgumentException();
-            }
-
-            T control = null;
-
-            var childCount = VisualTreeHelper.GetChildrenCount(root);
-
-            for (var i = 0; i < childCount; i++)
-            {
-                control = VisualTreeHelper.GetChild(root, i) as T;
-
-                if (control != null)
-                {
-                    var frameworkElement = control as FrameworkElement;
-
-                    if ((frameworkElement != null) && frameworkElement.Name == controlName)
-                    {
-                        return control;
-                    }
-                }
-            }
-
-            return null;
-        }
     }
 }
