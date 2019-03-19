@@ -8,18 +8,28 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ShinyPixel"
+        xmlns:controls="clr-namespace:ShinyPixel.Controls"
         mc:Ignorable="d"
         Title="MainWindow" Height="700" Width="550">
-    <DockPanel>
+    <DockPanel LastChildFill="False">
         <Menu DockPanel.Dock="Top">
             <MenuItem Header="_File">
                 <MenuItem Header="_New" Click="MenuNew_Click" />
                 <MenuItem Header="E_xit" Click="MenuExit_Click" />
             </MenuItem>
         </Menu>
+        <StackPanel DockPanel.Dock="Bottom" FlowDirection="LeftToRight">
+            <ComboBox SelectedValue="{Binding  Path=ZoomFactor, ElementName=DrawingUi, Mode=TwoWay}"
+                      SelectedValuePath="Tag">
+                <ComboBoxItem Tag="1">100%</ComboBoxItem>
+                <ComboBoxItem Tag="2">200%</ComboBoxItem>
+                <ComboBoxItem Tag="3">300%</ComboBoxItem>
+                <ComboBoxItem Tag="4">400%</ComboBoxItem>
+                <ComboBoxItem Tag="5">500%</ComboBoxItem>
+            </ComboBox>
+        </StackPanel>
         <StackPanel Name="MainStackPanel">
-            <Grid Name="MainWindowGrid" Width="500" Height="500" />
-
+            <controls:DrawingUiControl x:Name="DrawingUi"  />
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="20" />
@@ -41,5 +51,4 @@
             </Grid>
         </StackPanel>
     </DockPanel>
-
 </Window>

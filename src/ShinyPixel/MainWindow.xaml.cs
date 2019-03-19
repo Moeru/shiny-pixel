@@ -40,6 +40,7 @@ namespace ShinyPixel
             private byte _red;
             private byte _green;
             private byte _blue;
+            private int _zoom;
 
             public byte Red
             {
@@ -56,6 +57,11 @@ namespace ShinyPixel
                 get { return _blue; }
                 set { _blue = value; OnPropertyChanged(nameof(Blue)); }
             }
+            public int Zoom
+            {
+                get { return _zoom; }
+                set { _zoom = value; OnPropertyChanged(nameof(Zoom)); }
+            }
         }
 
         public MainWindow()
@@ -66,13 +72,15 @@ namespace ShinyPixel
             {
                 Red = 0,
                 Green = 10,
-                Blue = 50
+                Blue = 50,
+                Zoom = 5
             };
 
             this.DataContext = _colorSelection;
 
             _colorSelection.PropertyChanged += new PropertyChangedEventHandler(ColorSelection_PropertyChanged);
 
+            /*
             _renderRectangles = new RectangleGeometry[100, 100];
 
             _geometryGroupA = new GeometryGroup();
@@ -117,7 +125,7 @@ namespace ShinyPixel
             _imageControl = new Image()
             {
                 Stretch = Stretch.None,
-                Source = _renderTargetBitmap // new DrawingImage(_drawingGroup)
+                Source = _renderTargetBitmap
             };
 
             var dockPanel = Content as DependencyObject;
@@ -126,16 +134,22 @@ namespace ShinyPixel
             grid.Children.Add(_imageControl);
 
             _imageControl.AddHandler(MouseDownEvent, new MouseButtonEventHandler(Image_MouseDown));
+            */
         }
 
         private void UpdateDrawing()
         {
-            using (var drawingContext = _backgroundDrawingVisual.RenderOpen())
-            {
-                drawingContext.DrawDrawing(_drawingGroup);
-            }
+            //var drawingVisual = (_colorSelection.Zoom == 0)
+            //    ? _backgroundDrawingVisual
+            //    : new DrawingVisual();
 
-            _renderTargetBitmap.Render(_backgroundDrawingVisual);
+            //using (var drawingContext = drawingVisual.RenderOpen())
+            //{
+            //    drawingContext.DrawDrawing(_drawingGroup);
+            //}
+
+            //_renderTargetBitmap.Clear();
+            //_renderTargetBitmap.Render(drawingVisual);
         }
 
         private void ColorSelection_PropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -149,12 +163,14 @@ namespace ShinyPixel
                         _colorSelection.Red,
                         _colorSelection.Green,
                         _colorSelection.Blue);
+                    UpdateDrawing();
+                    break;
+                case nameof(ColorSelection.Zoom):
+                    UpdateDrawing();
                     break;
                 default:
                     break;
             }
-
-            UpdateDrawing();
         }
 
         private void Image_MouseDown(object sender, MouseButtonEventArgs e)
