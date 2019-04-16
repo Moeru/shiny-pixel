@@ -56,11 +56,18 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Page Include="Controls\DrawingUiControl.xaml">
+    <Compile Include="ViewModels\AutomaticDependencyObject.cs" />
+    <Compile Include="ViewModels\ColorViewModel.cs" />
+    <Compile Include="ViewModels\DrawingAreaViewModel.cs" />
+    <Page Include="Controls\UserControls\DrawingUiControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Controls\PaletteColorControl.xaml">
+    <Page Include="Controls\UserControls\PaletteColorControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\Dialogs\NewImageDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -73,11 +80,14 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Controls\ControlUtils.cs" />
-    <Compile Include="Controls\DrawingUiControl.xaml.cs">
+    <Compile Include="Controls\UserControls\DrawingUiControl.xaml.cs">
       <DependentUpon>DrawingUiControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Controls\PaletteColorControl.xaml.cs">
+    <Compile Include="Controls\UserControls\PaletteColorControl.xaml.cs">
       <DependentUpon>PaletteColorControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\Dialogs\NewImageDialog.xaml.cs">
+      <DependentUpon>NewImageDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
@@ -110,5 +120,6 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
